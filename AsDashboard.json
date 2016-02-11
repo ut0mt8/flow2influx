@@ -1,0 +1,279 @@
+{
+  "id": 6,
+  "title": "AS Stats",
+  "originalTitle": "AS Stats",
+  "tags": [],
+  "style": "light",
+  "timezone": "browser",
+  "editable": true,
+  "hideControls": false,
+  "sharedCrosshair": false,
+  "rows": [
+    {
+      "collapse": false,
+      "editable": false,
+      "height": 369,
+      "panels": [
+        {
+          "aliasColors": {
+            "15133": "#F9934E",
+            "France-IX": "#447EBC",
+            "all": "#BF1B00"
+          },
+          "annotate": {
+            "enable": false
+          },
+          "bars": false,
+          "datasource": "flows",
+          "fill": 3,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "max": null,
+            "min": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(226, 147, 147, 0.22)",
+            "thresholdLine": false
+          },
+          "id": 13,
+          "interactive": true,
+          "leftYAxisLabel": "bits/s",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": false,
+            "max": true,
+            "min": false,
+            "rightSide": false,
+            "show": true,
+            "sort": "current",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "legend_counts": true,
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "options": false,
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "resolution": 100,
+          "scale": 1,
+          "seriesOverrides": [
+            {
+              "alias": "In",
+              "transform": "negative-Y"
+            }
+          ],
+          "span": 4,
+          "spyable": true,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "Out",
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "auto"
+                  ],
+                  "type": "time"
+                }
+              ],
+              "measurement": "as_out",
+              "query": "SELECT mean(\"bps\") FROM \"as_out\" WHERE \"asn\" =~ /$as$/ AND $timeFilter GROUP BY time($interval)",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "bps"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "asn",
+                  "operator": "=~",
+                  "value": "/$as$/"
+                }
+              ]
+            },
+            {
+              "alias": "In",
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "auto"
+                  ],
+                  "type": "time"
+                }
+              ],
+              "measurement": "as_in",
+              "query": "SELECT mean(\"bps\") FROM \"as_in\" WHERE \"asn\" =~ /$as$/ AND $timeFilter GROUP BY time($interval)",
+              "refId": "B",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "bps"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "asn",
+                  "operator": "=~",
+                  "value": "/$as$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "timezone": "browser",
+          "title": "BGP AS $as Traffic",
+          "tooltip": {
+            "query_as_alias": true,
+            "shared": true,
+            "value_type": "individual"
+          },
+          "transparent": false,
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "bps",
+            "bytes"
+          ]
+        }
+      ],
+      "showTitle": false,
+      "title": "Traffic"
+    }
+  ],
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "collapse": false,
+    "enable": true,
+    "notice": false,
+    "now": true,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "status": "Stable",
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "3h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ],
+    "type": "timepicker"
+  },
+  "templating": {
+    "enable": false,
+    "list": [
+      {
+        "allFormat": "glob",
+        "current": {
+          "tags": [],
+          "text": "3215",
+          "value": "3215"
+        },
+        "datasource": null,
+        "hideLabel": false,
+        "includeAll": false,
+        "multi": false,
+        "name": "as",
+        "options": [
+          {
+            "selected": false,
+            "text": "54104",
+            "value": "54104"
+          },
+          {
+            "selected": false,
+            "text": "15133",
+            "value": "15133"
+          },
+          {
+            "selected": true,
+            "text": "3215",
+            "value": "3215"
+          },
+          {
+            "selected": false,
+            "text": "12322",
+            "value": "12322"
+          },
+          {
+            "selected": false,
+            "text": "5410",
+            "value": "5410"
+          },
+          {
+            "selected": false,
+            "text": "36351",
+            "value": "36351"
+          }
+        ],
+        "query": "54104, 15133, 3215, 12322, 5410, 36351",
+        "refresh_on_load": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "annotations": {
+    "enable": false,
+    "list": []
+  },
+  "refresh": "1m",
+  "schemaVersion": 8,
+  "version": 0,
+  "links": []
+}
