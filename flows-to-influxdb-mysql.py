@@ -4,35 +4,13 @@ import MySQLdb as mdb
 from influxdb import InfluxDBClient
 from collections import defaultdict
 from pprint import pprint
+import pytz
 import rrdtool
 import sys
 
+# read the configuration file
+execfile('flows.conf')
 
-rrdpath = '/some/path/rrd/'
-sampling = '1000'
-
-sql = {
-  'host': '127.0.0.1',
-  'db': 'pmacct',
-  'user': 'pmacct',
-  'passwd': 'XXXX',
-}
-
-idb = {
-  'host': '10.3.0.20',
-  'port': 8186,
-  'db': 'flows',
-  'user': 'flow',
-  'passwd': 'XXXX',
-}
-
-custs_map = {
-  'all': '000',
-  'cust1': '100',
-  'cust2': '101',
-  'cust3': '102',
-  'cust4': '103',
-}
 
 # autovivifaction
 def tree():
@@ -155,11 +133,12 @@ def get_bgpstats(direc, cust, id_cust):
 
 # 1.1 get interface statistics
 # loop over customer
-for cust in custs_map:
-    get_ifstats('in', cust, custs_map[cust])
-    get_ifstats('out', cust, custs_map[cust])
-    get_flowstats('in', cust, custs_map[cust])
-    get_flowstats('out', cust, custs_map[cust])
+for key, cust in custs_map.iteritems():
+    cid = str(key)
+    get_ifstats('in', cust, cid)
+    get_ifstats('out', cust, cid)
+    get_flowstats('in', cust, cid)
+    get_flowstats('out', cust, cid)
 
 # 1.2 get protocol statistics
 get_protostats('in', 'all', '000')
@@ -172,26 +151,39 @@ get_bgpstats('out', 'all', '000')
 
 ## 2. write the data to influxdb
 
-# 1.1 write interface statistics
+# 2.1 write interface statistics
 for m in ['if_in', 'if_out']:
     for k,v in metrics[m].iteritems():
         write_influxdb(m, {'interface':k[0],'router':k[1],'customer':k[2]}, dict(v))
 
-# 1.2 write protocol statistics
+# 2.2 write protocol statistics
 for m in ['proto_in', 'proto_out']:
     for k,v in metrics[m].iteritems():
         write_influxdb(m, {'type':k[0],'customer':k[1]}, dict(v))
 
-# 1.3 write bgp statistics
+# 2.3 write bgp statistics
 for m in ['as_in', 'as_out']:
     for k,v in metrics[m].iteritems():
         write_influxdb(m, {'asn':k[0],'customer':k[1]}, dict(v))
 
 
 ## 3. write the data to rdd
-for cust in custs_map:
+
+# 3.1 customers rrd
+for key, cust in custs_map.iteritems():
     in_bps = metrics['if_in'][('any','any',cust)]['bps']
     out_bps = metrics['if_out'][('any','any',cust)]['bps']
     write_rrd(cust, int(in_bps/8), int(out_bps/8))
 
+# 3.2 interfaces rrd
+for interface in set(interfaces_map.values()):
+    try:
+        in_bps = [v['bps'] for (k,v) in metrics['if_in'].iteritems() if k[0] == interface if k[2] == 'all'][0]
+        out_bps = [v['bps'] for (k,v) in metrics['if_out'].iteritems() if k[0] == interface if k[2] == 'all'][0]
+        write_rrd(interface, int(in_bps/8), int(out_bps/8))
+    except:
+        write_rrd(interface, 0, 0)
+         
+        
+    
 
